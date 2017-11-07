@@ -1,0 +1,16 @@
+{
+  "name": "neutrongame-electronwebui",
+  "version": "1.0.0",
+  "description": "Neutron Game",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Rigoberto L. Salgado Reyes",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "electron": "^1.7.9",
+    "jquery": "^3.2.1",
+    "util": "^0.10.3"
+  }
+}

@@ -1,0 +1,30 @@
+#neutronBoard {
+    width:312px;
+    height:312px;    
+}
+
+.cell {
+    width:50px;
+    height:50px;
+    float:left;
+}
+
+.center_div {
+    margin: 0 auto;
+    width:610px;
+    height:60%;
+}
+
+ul {
+    width: 250px;
+    font-size: small;
+}
+
+.height-limiter {
+    height: 210px;
+    overflow-y:scroll;
+}
+
+a {
+    text-align: center;
+}
