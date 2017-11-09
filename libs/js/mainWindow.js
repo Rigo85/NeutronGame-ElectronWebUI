@@ -106,7 +106,6 @@ ipcRenderer.on('board:updated', (event, board) => {
         .map(i => {
             const row = parseInt(i / 6);
             const col = i % 6;
-
             if (row > 4 || !col) return createHeader(row, col);
             return createChip(board[row][col - 1], row, col);
         })
