@@ -25,11 +25,11 @@ app.on('ready', () => {
 ipcMain.on('cell:click', (e, id) => {
     const m = /(.*)-(\d)-(\d)/g.exec(id);
     core.onCellClicked(parseInt(m[2]), parseInt(m[3]))
-        .then(b => mainWindow.webContents.send('board:updated', b))
+        .then(obj => mainWindow.webContents.send('board:updated', obj))
         .catch(e => console.error(e));
 });
 
-ipcMain.on('reload', event => event.sender.send('board:updated', core.board));
+ipcMain.on('reload', event => event.sender.send('board:updated', { board: core.board, moves: core.movements }));
 
 const mainMenuTemplate = [
     {

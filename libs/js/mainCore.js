@@ -43,8 +43,13 @@ exports.board = [
 //Pieces rotation.  
 const rotation = [PieceKind.NEUTRON, PieceKind.WHITE];
 
+//Movements
+exports.movements = [];
+
 //
 var whoMove = 0;
+var neutronFrom;
+var neutronTo;
 
 function getWhoMove() {
     return rotation[whoMove];
@@ -321,6 +326,7 @@ function minValue(board, depth, alpha, beta, player) {
 
 exports.onCellClicked = function (row, col) {
     return new Promise((resolve, reject) => {
+        let endGame;
         if (exports.board[row][col] === getWhoMove()) {
             updateBoard([], exports.board);
             const move = new Move(row, col, getWhoMove());
@@ -333,29 +339,43 @@ exports.onCellClicked = function (row, col) {
             updateBoard([], exports.board);
 
             if (getWhoMove() === PieceKind.WHITE) {
-                //list de movimientos
                 const machineFullMove = maxValue(
                     exports.board,
-                    4,
+                    3,
                     Number.MIN_SAFE_INTEGER,
                     Number.MAX_SAFE_INTEGER,
                     PieceKind.BLACK);
 
                 if (machineFullMove !== null) {
-                    //list de movs.
+                    exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
+                    exports.movements.push(machineFullMove);
+                    neutronTo = machineFullMove.moves[1];
                     applyFullMove(machineFullMove, exports.board);
                     updateBoard([], exports.board);
                 }
+            } else {
+                neutronFrom = selectedChip;
+                neutronTo = new Move(row, col, selectedChip.kind);
             }
-            
+
+            //checkGameOver
+            endGame = checkGameOver(neutronTo);
             updateWhoMove();
             selectedChip = undefined;
-            //checkGameOver
+
         } else {
             updateBoard([], exports.board);
             selectedChip = undefined;
         }
-        resolve(exports.board);
+        resolve({ board: exports.board, moves: exports.movements, endgame: endGame });
     });
+}
+
+function checkGameOver(neutronDestination) {
+    const row = neutronDestination ? neutronDestination.row : 4;
+    if (row == 0 || row == 4) {
+        return { success: true, kind: row == 0 ? PieceKind.BLACK : PieceKind.WHITE };
+    }
+    return { success: false, kind: 4 };
 }
 

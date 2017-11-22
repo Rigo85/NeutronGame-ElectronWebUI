@@ -97,8 +97,44 @@ function createHeader(row, col) {
     return div;
 }
 
+function kind2Name(pieceKind) {
+    const names = { 1: 'BLACK', 2: 'WHITE', 3: 'NEUTRON' };
+    return names[pieceKind] || 'NO KIND';
+}
+
+function moveToString(move) {
+    const chars = ['a', 'b', 'c', 'd', 'e'];
+    return `${chars[move.col]}${5 - move.row}`;
+}
+
+function fullMoveToString(fullMove) {
+    if (fullMove.moves.length) {
+        const piece1Kind = kind2Name(fullMove.moves[1].kind);
+        const piece2Kind = kind2Name(fullMove.moves[3].kind);
+        return `${piece1Kind}: ${moveToString(fullMove.moves[0])}-${moveToString(fullMove.moves[1])}, ` +
+            `${piece2Kind}: ${moveToString(fullMove.moves[2])}-${moveToString(fullMove.moves[3])}`;
+    }
+
+    return `EMPTY FULLMOVE with score = ${score}`;
+}
+
+function updateMovements(moves) {
+    const movements = document.getElementById("movements");
+    movements.innerHTML = '';
+
+    moves
+        .map(m => {
+            const li = document.createElement('li');
+            li.className = 'collection-item';
+            li.appendChild(document.createTextNode(fullMoveToString(m)));
+
+            return li;
+        })
+        .forEach(li => movements.appendChild(li));
+}
+
 //Refresh view on board changes.
-ipcRenderer.on('board:updated', (event, board) => {
+ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
     document.getElementById("neutronBoard").innerHTML = '';
 
     Array
@@ -110,5 +146,13 @@ ipcRenderer.on('board:updated', (event, board) => {
             return createChip(board[row][col - 1], row, col);
         })
         .forEach(d => document.getElementById("neutronBoard").appendChild(d));
+
+    updateMovements(moves);
+
+    if(endgame.success){
+        alert(`${kind2Name(endgame.kind)} wins!`);
+        //preguntar guardar
+        //reiniciar juego.
+    }
 });
 

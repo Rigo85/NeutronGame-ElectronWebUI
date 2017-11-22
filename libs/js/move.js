@@ -6,6 +6,8 @@ class Move {
         this.row = row;
         this.col = col;
         this.kind = kind;
+
+        Move.prototype.toString = this.toString;
     }
 
     clone() {
