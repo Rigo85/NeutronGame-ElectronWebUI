@@ -150,9 +150,9 @@ ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
     updateMovements(moves);
 
     if(endgame.success){
-        alert(`${kind2Name(endgame.kind)} wins!`);
-        //preguntar guardar
-        //reiniciar juego.
+        const response = confirm(`${kind2Name(endgame.kind)} wins!, do you want to save this game?`);
+        //TODO guardar si es necesario
+        ipcRenderer.send('game:new');
     }
 });
 

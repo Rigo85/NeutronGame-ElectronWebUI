@@ -231,6 +231,7 @@ function allMoves(pieceKind, board) {
     const opponentHome = pieceKind == PieceKind.BLACK ? 4 : 0;
     const neutronMoves = moves(neutron, board);
 
+    //todo revisar esto
     neutronMoves.sort((o1, o2) => {
         if (o1.row === playerHome || o2.row === opponentHome) return -1;
         if (o2.row === playerHome || o1.row === opponentHome) return 1;
@@ -281,6 +282,7 @@ function maxValue(board, depth, alpha, beta, player) {
         }
 
         if (newAlpha >= beta) {
+            console.log('++++++++++++++++++++++++++++');
             fullMove.score = newAlpha;
             return fullMove;
         }
@@ -316,6 +318,7 @@ function minValue(board, depth, alpha, beta, player) {
         }
 
         if (alpha >= newBeta) {
+            console.log('--------------------------------');
             fullMove.score = newBeta;
             return fullMove;
         }
@@ -325,6 +328,17 @@ function minValue(board, depth, alpha, beta, player) {
 }
 
 exports.onCellClicked = function (row, col) {
+    //     const settings = require('electron-settings').setPath('./conf');
+    // //    // settings.setPath('./conf');
+    // //     settings.set('name', {
+    // //         first: 'Cosmo',
+    // //         last: 'Kramer'
+    // //     });
+
+    //     console.log(settings.get('name.first'));
+    //     console.log(settings.file());
+
+
     return new Promise((resolve, reject) => {
         let endGame;
         if (exports.board[row][col] === getWhoMove()) {
@@ -358,7 +372,6 @@ exports.onCellClicked = function (row, col) {
                 neutronTo = new Move(row, col, selectedChip.kind);
             }
 
-            //checkGameOver
             endGame = checkGameOver(neutronTo);
             updateWhoMove();
             selectedChip = undefined;
@@ -379,3 +392,12 @@ function checkGameOver(neutronDestination) {
     return { success: false, kind: 4 };
 }
 
+exports.newGame = () => {
+    exports.board = [
+        [PieceKind.BLACK, PieceKind.BLACK, PieceKind.BLACK, PieceKind.BLACK, PieceKind.BLACK],
+        [PieceKind.CELL, PieceKind.CELL, PieceKind.CELL, PieceKind.CELL, PieceKind.CELL],
+        [PieceKind.CELL, PieceKind.CELL, PieceKind.NEUTRON, PieceKind.CELL, PieceKind.CELL],
+        [PieceKind.CELL, PieceKind.CELL, PieceKind.CELL, PieceKind.CELL, PieceKind.CELL],
+        [PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE]];
+    exports.movements = [];
+}

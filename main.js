@@ -30,6 +30,10 @@ ipcMain.on('cell:click', (e, id) => {
 });
 
 ipcMain.on('reload', event => event.sender.send('board:updated', { board: core.board, moves: core.movements }));
+ipcMain.on('game:new', event => {
+    core.newGame();
+    event.sender.send('board:updated', { board: core.board, moves: core.movements });
+});
 
 const mainMenuTemplate = [
     {
