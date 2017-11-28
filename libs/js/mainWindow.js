@@ -118,6 +118,10 @@ function fullMoveToString(fullMove) {
     return `EMPTY FULLMOVE with score = ${score}`;
 }
 
+/**
+ * 
+ * @param {moves to update the moves <ul> list.} moves 
+ */
 function updateMovements(moves) {
     const movements = document.getElementById("movements");
     movements.innerHTML = '';
@@ -133,7 +137,9 @@ function updateMovements(moves) {
         .forEach(li => movements.appendChild(li));
 }
 
-//Refresh view on board changes.
+/**
+ * Refresh view on board changes.
+ */
 ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
     document.getElementById("neutronBoard").innerHTML = '';
 
@@ -149,10 +155,10 @@ ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
 
     updateMovements(moves);
 
-    if(endgame.success){
-        if(confirm(`${kind2Name(endgame.kind)} wins!, do you want to save this game?`))
+    if (endgame.success) {
+        if (confirm(`${kind2Name(endgame.kind)} wins!, do you want to save this game?`)) {
             ipcRenderer.send('game:save');
-        //TODO guardar si es necesario
+        }
         ipcRenderer.send('game:new');
     }
 });

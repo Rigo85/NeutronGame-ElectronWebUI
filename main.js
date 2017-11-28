@@ -37,7 +37,8 @@ ipcMain.on('game:new', event => {
     event.sender.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } });
 });
 
-ipcMain.on('game:save', event => core.saveGame());
+ipcMain.on('game:save', event =>
+    core.saveGame());
 
 const mainMenuTemplate = [
     {
