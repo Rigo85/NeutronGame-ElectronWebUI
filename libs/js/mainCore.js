@@ -177,37 +177,23 @@ function findNeutron(board) {
 //TODO comentar en pseudo-código la heurística.
 //
 function heuristic(board, pieceKind) {
-    let blacks = 0;
-    let whites = 0;
-    let goalBlacks = 0;
-    let goalWhites = 0;
-
     const neutron = findNeutron(board);
-    if (neutron.row === 0) return 1000;
-    if (neutron.row === 4) return -1000;
 
-    const _moves = moves(neutron, board);
-    goalBlacks += _moves.filter(m => m.row === 0).length * 100;
-    goalWhites += _moves.filter(m => m.row === 4).length * 100;
+    if (neutron.row === 4) return Number.MIN_SAFE_INTEGER;
+    if (neutron.row === 0) return Number.MAX_SAFE_INTEGER;
 
-    if (pieceKind === PieceKind.WHITE && goalWhites !== 0) return -goalWhites;
-    if (pieceKind === PieceKind.BLACK && goalBlacks !== 0) return goalBlacks;
-    if (pieceKind === PieceKind.BLACK && goalWhites !== 0) whites += 100;
+    const neutronMoves = moves(neutron, board);
 
-    const emptySpacesInBlacks = board[0].reduce((acc, c) => acc + (c === PieceKind.CELL ? 1 : 0), 0);
-    const emptySpacesInWhites = board[4].reduce((acc, c) => acc + (c === PieceKind.CELL ? 1 : 0), 0);
+    const count = neutronMoves
+        .map(move => {
+            if (move.row === 4) return -1000;
+            if (move.row === 0) return 1000;
+            return 0;
+        })
+        .reduce((acc, c) => acc + c, 0);
 
-    Array
-        .from(Array(25).keys())
-        .forEach(i => {
-            const row = parseInt(i / 5);
-            const col = i % 5;
-
-            if (board[row][col] === PieceKind.BLACK) blacks += moves(new Move(row, col), board).length;
-            if (board[row][col] === PieceKind.WHITE) whites += moves(new Move(row, col), board).length;
-        });
-
-    return (blacks * emptySpacesInBlacks) - (whites * emptySpacesInWhites);
+    //todo ver esto
+    return count || neutronMoves.length;
 }
 
 //
@@ -256,34 +242,28 @@ function allMoves(pieceKind, board) {
 
 //
 function maxValue(board, depth, alpha, beta, player) {
-    if (!depth) return new FullMove([], heuristic(board));
+    //TODO queda analizar cuando no existan movimientos tanto para el neutrón como el jugador en cuestión.
+    const neutron = findNeutron(board);
+    if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
     let maxFullMove = null;
-    const fullMoves = allMoves(player, board);
-
     let newAlpha = alpha;
 
-    fullMoves.forEach(fullMove => {
+    allMoves(player, board).forEach(fullMove => {
         applyFullMove(fullMove, board);
-        let minFullMove = null;
 
-        if (fullMove.moves[1].row === 0 || fullMove.moves[1].row === 4) {
-            minFullMove = new FullMove([], heuristic(board, player));
-        } else {
-            minFullMove = minValue(board, depth - 1, newAlpha, beta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
-        }
+        const minFullMove = minValue(board, depth - 1, newAlpha, beta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
 
         applyFullMove(fullMove, board, false);
 
-        if (minFullMove !== null && minFullMove.score > newAlpha) {
+        if (minFullMove && minFullMove.score > newAlpha) {
             newAlpha = minFullMove.score;
             maxFullMove = fullMove;
             maxFullMove.score = newAlpha;
         }
 
         if (newAlpha >= beta) {
-            console.log('++++++++++++++++++++++++++++');
-            fullMove.score = newAlpha;
+            fullMove.score = beta;
             return fullMove;
         }
     });
@@ -293,33 +273,28 @@ function maxValue(board, depth, alpha, beta, player) {
 
 //
 function minValue(board, depth, alpha, beta, player) {
-    if (depth === 0) return new FullMove([], heuristic(board, player));
+    //TODO queda analizar cuando no existan movimientos tanto para el neutrón como el jugador en cuestión.
+    const neutron = findNeutron(board);
+    if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
     let minFullMove = null;
-    const fullMoves = allMoves(player, board);
     let newBeta = beta;
 
-    fullMoves.forEach(fullMove => {
+    allMoves(player, board).forEach(fullMove => {
         applyFullMove(fullMove, board);
-        let maxFullMove = null;
 
-        if (fullMove.moves[1].row === 0 || fullMove.moves[1].row === 4) {
-            maxFullMove = new FullMove([], heuristic(board, player));
-        } else {
-            maxFullMove = maxValue(board, depth - 1, alpha, newBeta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
-        }
+        const maxFullMove = maxValue(board, depth - 1, alpha, newBeta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
 
         applyFullMove(fullMove, board, false);
 
-        if (maxFullMove !== null && maxFullMove.score < beta) {
+        if (maxFullMove && maxFullMove.score < beta) {
             newBeta = maxFullMove.score;
             minFullMove = fullMove;
             minFullMove.score = newBeta;
         }
 
         if (alpha >= newBeta) {
-            console.log('--------------------------------');
-            fullMove.score = newBeta;
+            fullMove.score = alpha;
             return fullMove;
         }
     });
@@ -328,17 +303,6 @@ function minValue(board, depth, alpha, beta, player) {
 }
 
 exports.onCellClicked = function (row, col) {
-    //     const settings = require('electron-settings').setPath('./conf');
-    // //    // settings.setPath('./conf');
-    // //     settings.set('name', {
-    // //         first: 'Cosmo',
-    // //         last: 'Kramer'
-    // //     });
-
-    //     console.log(settings.get('name.first'));
-    //     console.log(settings.file());
-
-
     return new Promise((resolve, reject) => {
         let endGame;
         if (exports.board[row][col] === getWhoMove()) {

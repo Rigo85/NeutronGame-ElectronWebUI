@@ -43,30 +43,29 @@ const mainMenuTemplate = [
                 label: 'New game',
                 accelerator: process.platform == 'darwin' ? 'Command+N' : 'Ctrl+N',
                 click() {
-                    //llamar a la función q guarda.
-
+                    //TODO llamar a la función q crea un nuevo juego.
                 }
             },
             {
                 label: 'Save game',
                 accelerator: process.platform == 'darwin' ? 'Command+S' : 'Ctrl+S',
                 click() {
-                    //llamar a la función q guarda.
-
+                    //TODO llamar a la función q guarda.
                 }
             },
             {
                 label: 'Load game',
                 accelerator: process.platform == 'darwin' ? 'Command+O' : 'Ctrl+O',
                 click() {
-                    //llamar a la función que carga.
+                    //TODO llamar a la función que carga.
                 }
             },
             {
                 label: 'Quit',
                 accelerator: process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
                 click() {
-                    app.quit();
+                    if (confirm('Are you sure you want to close the game?'))
+                        app.quit();
                 }
             }
         ]
