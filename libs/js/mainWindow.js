@@ -150,7 +150,8 @@ ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
     updateMovements(moves);
 
     if(endgame.success){
-        const response = confirm(`${kind2Name(endgame.kind)} wins!, do you want to save this game?`);
+        if(confirm(`${kind2Name(endgame.kind)} wins!, do you want to save this game?`))
+            ipcRenderer.send('game:save');
         //TODO guardar si es necesario
         ipcRenderer.send('game:new');
     }

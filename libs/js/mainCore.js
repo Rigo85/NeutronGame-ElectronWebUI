@@ -2,6 +2,8 @@
 
 const util = require('util');
 const _ = require('lodash');
+const path = require('path');
+const jsonfile = require('jsonfile');
 
 const Move = require('./move.js');
 const FullMove = require('./fullMove.js');
@@ -317,26 +319,29 @@ exports.onCellClicked = function (row, col) {
             updateBoard([], exports.board);
 
             if (getWhoMove() === PieceKind.WHITE) {
-                const machineFullMove = maxValue(
-                    exports.board,
-                    3,
-                    Number.MIN_SAFE_INTEGER,
-                    Number.MAX_SAFE_INTEGER,
-                    PieceKind.BLACK);
+                endGame = checkGameOver(neutronFrom, neutronTo, PieceKind.WHITE);
+                if (!endGame.success) {
+                    const machineFullMove = maxValue(
+                        exports.board,
+                        3,
+                        Number.MIN_SAFE_INTEGER,
+                        Number.MAX_SAFE_INTEGER,
+                        PieceKind.BLACK);
 
-                if (machineFullMove !== null) {
-                    exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
-                    exports.movements.push(machineFullMove);
-                    neutronTo = machineFullMove.moves[1];
-                    applyFullMove(machineFullMove, exports.board);
-                    updateBoard([], exports.board);
+                    if (machineFullMove) {
+                        exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
+                        exports.movements.push(machineFullMove);
+                        neutronTo = machineFullMove.moves[1];
+                        applyFullMove(machineFullMove, exports.board);
+                        updateBoard([], exports.board);
+                        endGame = checkGameOver(neutronFrom, neutronTo, PieceKind.BLACK);
+                    }
                 }
             } else {
                 neutronFrom = selectedChip;
                 neutronTo = new Move(row, col, selectedChip.kind);
             }
 
-            endGame = checkGameOver(neutronTo);
             updateWhoMove();
             selectedChip = undefined;
 
@@ -344,15 +349,19 @@ exports.onCellClicked = function (row, col) {
             updateBoard([], exports.board);
             selectedChip = undefined;
         }
-        resolve({ board: exports.board, moves: exports.movements, endgame: endGame });
+        resolve({ board: exports.board, moves: exports.movements, endgame: endGame || { success: false } });
     });
 }
 
-function checkGameOver(neutronDestination) {
-    const row = neutronDestination ? neutronDestination.row : 4;
-    if (row == 0 || row == 4) {
-        return { success: true, kind: row == 0 ? PieceKind.BLACK : PieceKind.WHITE };
+function checkGameOver(neutronFrom, neutronTo, pieceKind) {
+    if (neutronFrom.row === neutronTo.row && neutronFrom.col === neutronTo.col)
+        return { success: true, kind: pieceKind };
+
+   // const row = neutronTo ? neutronTo.row : 4;
+    if (neutronTo.row == 0 || neutronTo.row == 4) {
+        return { success: true, kind: neutronTo.row == 0 ? PieceKind.BLACK : PieceKind.WHITE };
     }
+
     return { success: false, kind: 4 };
 }
 
@@ -364,4 +373,14 @@ exports.newGame = () => {
         [PieceKind.CELL, PieceKind.CELL, PieceKind.CELL, PieceKind.CELL, PieceKind.CELL],
         [PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE]];
     exports.movements = [];
+    whoMove = 0;
+}
+
+exports.saveGame = () => {
+    const file = path.join(process.cwd(), `neutron-game-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+
+    jsonfile.writeFile(file, exports.movements, { spaces: 2 }, err => {
+        //TODO do this on mainwindow..
+        if (err) console.error(err);
+    });
 }

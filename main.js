@@ -29,11 +29,15 @@ ipcMain.on('cell:click', (e, id) => {
         .catch(e => console.error(e));
 });
 
-ipcMain.on('reload', event => event.sender.send('board:updated', { board: core.board, moves: core.movements }));
+ipcMain.on('reload', event =>
+    event.sender.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } }));
+
 ipcMain.on('game:new', event => {
     core.newGame();
-    event.sender.send('board:updated', { board: core.board, moves: core.movements });
+    event.sender.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } });
 });
+
+ipcMain.on('game:save', event => core.saveGame());
 
 const mainMenuTemplate = [
     {

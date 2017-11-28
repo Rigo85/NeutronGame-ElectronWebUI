@@ -1,0 +1,202 @@
+[
+  {
+    "moves": [
+      {
+        "row": 2,
+        "col": 2,
+        "kind": 3
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "kind": 3
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "kind": 2
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "kind": 2
+      }
+    ],
+    "score": 0
+  },
+  {
+    "moves": [
+      {
+        "row": 1,
+        "col": 2,
+        "kind": 3
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "kind": 1
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "kind": 1
+      }
+    ],
+    "score": 2000
+  },
+  {
+    "moves": [
+      {
+        "row": 1,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "kind": 3
+      },
+      {
+        "row": 4,
+        "col": 0,
+        "kind": 2
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "kind": 2
+      }
+    ],
+    "score": 0
+  },
+  {
+    "moves": [
+      {
+        "row": 3,
+        "col": 2,
+        "kind": 3
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "kind": 3
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "kind": 1
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "kind": 1
+      }
+    ],
+    "score": 3000
+  },
+  {
+    "moves": [
+      {
+        "row": 1,
+        "col": 0,
+        "kind": 3
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "kind": 2
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "kind": 2
+      }
+    ],
+    "score": 0
+  },
+  {
+    "moves": [
+      {
+        "row": 1,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "kind": 1
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "kind": 1
+      }
+    ],
+    "score": 2000
+  },
+  {
+    "moves": [
+      {
+        "row": 3,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "kind": 2
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "kind": 2
+      }
+    ],
+    "score": 0
+  },
+  {
+    "moves": [
+      {
+        "row": 1,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "kind": 3
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "kind": 1
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "kind": 1
+      }
+    ],
+    "score": 2000
+  }
+]
