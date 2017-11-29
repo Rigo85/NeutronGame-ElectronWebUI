@@ -194,8 +194,7 @@ function heuristic(board, pieceKind) {
         })
         .reduce((acc, c) => acc + c, 0);
 
-    //todo ver esto
-    return count || neutronMoves.length;
+    return count || pieceKind == PieceKind.BLACK ? neutronMoves.length : -neutronMoves.length;
 }
 
 //
@@ -317,7 +316,7 @@ exports.onCellClicked = function (row, col) {
             updateBoard([], exports.board);
 
             if (getWhoMove() === PieceKind.WHITE) {
-                endGame = checkGameOver(neutronFrom, neutronTo, PieceKind.WHITE);
+                endGame = checkGameOver(neutronTo, PieceKind.WHITE);
                 exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
 
                 if (!endGame.success) {
@@ -333,7 +332,7 @@ exports.onCellClicked = function (row, col) {
                         neutronTo = machineFullMove.moves[1];
                         applyFullMove(machineFullMove, exports.board);
                         updateBoard([], exports.board);
-                        endGame = checkGameOver(machineFullMove.moves[0], machineFullMove.moves[1], PieceKind.BLACK);
+                        endGame = checkGameOver(machineFullMove.moves[1], PieceKind.BLACK);
                     } else {
                         endGame = { success: true, kind: PieceKind.WHITE };
                     }
@@ -341,7 +340,7 @@ exports.onCellClicked = function (row, col) {
             } else {
                 neutronFrom = selectedChip;
                 neutronTo = new Move(row, col, selectedChip.kind);
-                endGame = checkGameOver(neutronFrom, neutronTo, PieceKind.WHITE);
+                endGame = checkGameOver(neutronTo, PieceKind.WHITE);
             }
 
             updateWhoMove();
