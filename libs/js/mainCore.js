@@ -246,23 +246,21 @@ function maxValue(board, depth, alpha, beta, player) {
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
-    let maxFullMove = null;
-    let newAlpha = alpha;
+    const maxFullMove = new FullMove([], alpha);
 
     allMoves(player, board).forEach(fullMove => {
         applyFullMove(fullMove, board);
 
-        const minFullMove = minValue(board, depth - 1, newAlpha, beta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
+        const minFullMove = minValue(board, depth - 1, maxFullMove.score, beta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
+
+        if (minFullMove.score > maxFullMove.score) {
+            maxFullMove.score = minFullMove.score;
+            maxFullMove.moves = fullMove.moves;
+        }
 
         applyFullMove(fullMove, board, false);
 
-        if (minFullMove && minFullMove.score > newAlpha) {
-            newAlpha = minFullMove.score;
-            maxFullMove = fullMove;
-            maxFullMove.score = newAlpha;
-        }
-
-        if (newAlpha >= beta) {
+        if (maxFullMove.score >= beta) {
             fullMove.score = beta;
             return fullMove;
         }
@@ -276,23 +274,21 @@ function minValue(board, depth, alpha, beta, player) {
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
-    let minFullMove = null;
-    let newBeta = beta;
+    const minFullMove = new FullMove([], beta);
 
     allMoves(player, board).forEach(fullMove => {
         applyFullMove(fullMove, board);
 
-        const maxFullMove = maxValue(board, depth - 1, alpha, newBeta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
+        const maxFullMove = maxValue(board, depth - 1, alpha, minFullMove.score, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
+
+        if (maxFullMove.score < minFullMove.score) {
+            minFullMove.score = maxFullMove.score;
+            minFullMove.moves = fullMove.moves;
+        }
 
         applyFullMove(fullMove, board, false);
 
-        if (maxFullMove && maxFullMove.score < beta) {
-            newBeta = maxFullMove.score;
-            minFullMove = fullMove;
-            minFullMove.score = newBeta;
-        }
-
-        if (alpha >= newBeta) {
+        if (alpha >= minFullMove.score) {
             fullMove.score = alpha;
             return fullMove;
         }
@@ -327,7 +323,7 @@ exports.onCellClicked = function (row, col) {
                         Number.MAX_SAFE_INTEGER,
                         PieceKind.BLACK);
 
-                    if (machineFullMove) {
+                    if (machineFullMove.moves.length) {
                         exports.movements.push(machineFullMove);
                         neutronTo = machineFullMove.moves[1];
                         applyFullMove(machineFullMove, exports.board);
