@@ -18,6 +18,7 @@
     "jquery": "^3.2.1",
     "jsonfile": "^4.0.0",
     "lodash": "^4.17.4",
+    "moment": "^2.19.3",
     "util": "^0.10.3"
   },
   "devDependencies": {

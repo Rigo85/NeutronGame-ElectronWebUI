@@ -4,6 +4,7 @@ const util = require('util');
 const _ = require('lodash');
 const path = require('path');
 const jsonfile = require('jsonfile');
+const moment = require('moment');
 
 const Move = require('./move.js');
 const FullMove = require('./fullMove.js');
@@ -369,11 +370,25 @@ exports.newGame = () => {
     whoMove = 0;
 }
 
-exports.saveGame = () => {
-    const file = path.join(process.cwd(), `neutron-game-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+exports.saveGame = (filename) => {
+    filename = filename || path.join(process.cwd(), `neutron-game-${moment().format().replace(/[:.]/g, '-')}.json`);
 
-    jsonfile.writeFile(file, exports.movements, { spaces: 2 }, err => {
+    jsonfile.writeFile(filename, { board: exports.board, movements: exports.movements }, { spaces: 2 }, err => {
         //TODO do this on mainwindow..
         if (err) console.error(err);
+    });
+}
+
+//fixme revisar!
+exports.loadGame = (filename) => {
+    jsonfile.readFile(filename, (err, obj) => {
+        if (err) {
+            //TODO do this on mainwindow..
+            console.error(err);
+        }
+        else {
+            exports.board = obj.board || exports.board;
+            exports.movements = obj.movements || exports.movements;
+        }
     });
 }

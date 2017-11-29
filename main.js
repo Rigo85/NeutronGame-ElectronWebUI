@@ -2,7 +2,7 @@ const electron = require('electron');
 const url = require('url')
 const path = require('path')
 
-const { app, BrowserWindow, Menu, ipcMain } = electron;
+const { app, BrowserWindow, Menu, ipcMain, dialog } = electron;
 
 const core = require('./libs/js/mainCore.js');
 
@@ -33,8 +33,9 @@ ipcMain.on('reload', event =>
     event.sender.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } }));
 
 ipcMain.on('game:new', event => {
-    core.newGame();
-    event.sender.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } });
+    // core.newGame();
+    // event.sender.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } });
+    newGame();
 });
 
 ipcMain.on('game:save', event =>
@@ -48,21 +49,21 @@ const mainMenuTemplate = [
                 label: 'New game',
                 accelerator: process.platform == 'darwin' ? 'Command+N' : 'Ctrl+N',
                 click() {
-                    //TODO llamar a la función q crea un nuevo juego.
+                    newGame();
                 }
             },
             {
                 label: 'Save game',
                 accelerator: process.platform == 'darwin' ? 'Command+S' : 'Ctrl+S',
                 click() {
-                    //TODO llamar a la función q guarda.
+                    saveGame();
                 }
             },
             {
                 label: 'Load game',
                 accelerator: process.platform == 'darwin' ? 'Command+O' : 'Ctrl+O',
                 click() {
-                    //TODO llamar a la función que carga.
+                    loadGame();
                 }
             },
             {
@@ -118,9 +119,50 @@ function aboutDialog() {
             resolve(data);
         });
     })
-        .then(data => require('electron').dialog.showMessageBox(mainWindow, {
+        .then(data => dialog.showMessageBox(mainWindow, {
             buttons: ['Ok'],
             title: 'About dialog',
             message: data
         }));
+}
+
+function newGame() {
+    core.newGame();
+    mainWindow.webContents.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } });
+}
+
+function saveGame() {
+    dialog.showSaveDialog(
+        mainWindow,
+        { title: 'Save the game' },
+        filename => {
+            if (!filename) {
+                dialog.showMessageBox(mainWindow, {
+                    buttons: ['Ok'],
+                    title: 'Information',
+                    message: 'The filename is needed to save the game.'
+                });
+            } else {
+                core.saveGame(filename);
+            }
+        });
+}
+
+function loadGame() {
+    dialog.showOpenDialog(
+        mainWindow,
+        { title: 'Load game', properties: ['openFile'] },
+        files => {
+            if (!files || !files.length) {
+                dialog.showMessageBox(mainWindow, {
+                    buttons: ['Ok'],
+                    title: 'Information',
+                    message: 'The filename is needed to load the game.'
+                });
+            } else {
+                core.saveGame(files[0]);
+                mainWindow.webContents.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } });
+            }
+        }
+    );
 }
