@@ -244,7 +244,6 @@ function allMoves(pieceKind, board) {
 
 //
 function maxValue(board, depth, alpha, beta, player) {
-    //TODO queda analizar cuando no existan movimientos tanto para el neutrón como el jugador en cuestión.
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
@@ -275,7 +274,6 @@ function maxValue(board, depth, alpha, beta, player) {
 
 //
 function minValue(board, depth, alpha, beta, player) {
-    //TODO queda analizar cuando no existan movimientos tanto para el neutrón como el jugador en cuestión.
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
@@ -320,6 +318,8 @@ exports.onCellClicked = function (row, col) {
 
             if (getWhoMove() === PieceKind.WHITE) {
                 endGame = checkGameOver(neutronFrom, neutronTo, PieceKind.WHITE);
+                exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
+
                 if (!endGame.success) {
                     const machineFullMove = maxValue(
                         exports.board,
@@ -329,17 +329,19 @@ exports.onCellClicked = function (row, col) {
                         PieceKind.BLACK);
 
                     if (machineFullMove) {
-                        exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
                         exports.movements.push(machineFullMove);
                         neutronTo = machineFullMove.moves[1];
                         applyFullMove(machineFullMove, exports.board);
                         updateBoard([], exports.board);
-                        endGame = checkGameOver(neutronFrom, neutronTo, PieceKind.BLACK);
+                        endGame = checkGameOver(machineFullMove.moves[0], machineFullMove.moves[1], PieceKind.BLACK);
+                    } else {
+                        endGame = { success: true, kind: PieceKind.WHITE };
                     }
                 }
             } else {
                 neutronFrom = selectedChip;
                 neutronTo = new Move(row, col, selectedChip.kind);
+                endGame = checkGameOver(neutronFrom, neutronTo, PieceKind.WHITE);
             }
 
             updateWhoMove();
@@ -353,15 +355,11 @@ exports.onCellClicked = function (row, col) {
     });
 }
 
-function checkGameOver(neutronFrom, neutronTo, pieceKind) {
-    if (neutronFrom.row === neutronTo.row && neutronFrom.col === neutronTo.col)
-        return { success: true, kind: pieceKind };
-
-   // const row = neutronTo ? neutronTo.row : 4;
-    if (neutronTo.row == 0 || neutronTo.row == 4) {
-        return { success: true, kind: neutronTo.row == 0 ? PieceKind.BLACK : PieceKind.WHITE };
-    }
-
+function checkGameOver(neutronDestination, pieceKind) {
+    const neutronMoves = moves(neutronDestination, exports.board);
+    if (!neutronMoves.length) return { success: true, kind: pieceKind };
+    if (!neutronDestination.row) return { success: true, kind: PieceKind.BLACK };
+    if (neutronDestination.row === 4) return { success: true, kind: PieceKind.WHITE };
     return { success: false, kind: 4 };
 }
 

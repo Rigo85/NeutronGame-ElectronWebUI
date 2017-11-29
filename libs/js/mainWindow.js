@@ -163,3 +163,15 @@ ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
     }
 });
 
+function tableToString(board) {
+    console.log(Array
+        .from(Array(5).keys())
+        .reduce((acc, i) => acc.concat(`||${board[i].map(pieceToString).join('|')}||\n`), ''));
+}
+
+function pieceToString(pieceKind) {
+    if (pieceKind === PieceKind.BLACK) return 'B';
+    if (pieceKind === PieceKind.WHITE) return 'W';
+    if (pieceKind === PieceKind.NEUTRON) return 'N';
+    return ' ';
+}
