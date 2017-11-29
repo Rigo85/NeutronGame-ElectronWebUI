@@ -9,7 +9,7 @@ const core = require('./libs/js/mainCore.js');
 let mainWindow;
 
 app.on('ready', () => {
-    mainWindow = new BrowserWindow({});
+    mainWindow = new BrowserWindow({ icon: 'icon.ico' });
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'mainWindow.html'),
         protocol: 'file:',
@@ -74,6 +74,17 @@ const mainMenuTemplate = [
                 }
             }
         ]
+    },
+    {
+        label: '?',
+        submenu: [
+            {
+                label: 'About',
+                click() {
+                    aboutDialog();
+                }
+            }
+        ]
     }
 ];
 
@@ -97,4 +108,19 @@ if (process.env.NODE_ENV !== 'producction') {
             }
         ]
     });
-}    
+}
+
+function aboutDialog() {
+    const filename = 'info.txt';
+    new Promise((resolve, reject) => {
+        require('fs').readFile('info.txt', 'utf8', (err, data) => {
+            if (err) reject(err);
+            resolve(data);
+        });
+    })
+        .then(data => require('electron').dialog.showMessageBox(mainWindow, {
+            buttons: ['Ok'],
+            title: 'About dialog',
+            message: data
+        }));
+}
