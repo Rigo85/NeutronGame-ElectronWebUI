@@ -90,6 +90,9 @@ exports.newGame = () => {
         [PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE, PieceKind.WHITE]];
     exports.movements = [];
     whoMove = 0;
+    selectedChip = undefined;
+    neutronFrom = undefined;
+    neutronTo = undefined;
 }
 
 /**
@@ -101,7 +104,14 @@ exports.saveGame = (filename) => {
 
     jsonfile.writeFile(
         filename,
-        { board: exports.board, movements: exports.movements, whomove: whoMove },
+        {
+            board: exports.board,
+            movements: exports.movements,
+            whoMove: whoMove,
+            selectedChip: selectedChip,
+            neutronFrom: neutronFrom,
+            neutronTo: neutronTo
+        },
         { spaces: 2 },
         err => {
             //TODO do this on mainwindow..
@@ -109,7 +119,6 @@ exports.saveGame = (filename) => {
         });
 }
 
-//todo revisar!
 /**
  * Load game.
  * @param {*} filename 
@@ -125,6 +134,9 @@ exports.loadGame = (filename) => {
             exports.board = obj.board || exports.board;
             exports.movements = obj.movements || exports.movements;
             whoMove = obj.whoMove;
+            selectedChip = obj.selectedChip;
+            neutronFrom = obj.neutronFrom;
+            neutronTo = obj.neutronTo;
             resolve(true);
         })
     });
