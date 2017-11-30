@@ -160,8 +160,9 @@ function loadGame() {
                     message: 'The filename is needed to load the game.'
                 });
             } else {
-                core.saveGame(files[0]);
-                mainWindow.webContents.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } });
+                core
+                .loadGame(files[0])
+                .then(() => mainWindow.webContents.send('board:updated', { board: core.board, moves: core.movements, endgame: { success: false } }));                
             }
         }
     );

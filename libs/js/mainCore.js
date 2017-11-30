@@ -195,7 +195,7 @@ function heuristic(board, pieceKind) {
         })
         .reduce((acc, c) => acc + c, 0);
 
-    return count || pieceKind == PieceKind.BLACK ? neutronMoves.length : -neutronMoves.length;
+    return count;// || pieceKind == PieceKind.BLACK ? neutronMoves.length : -neutronMoves.length;
 }
 
 //
@@ -217,7 +217,8 @@ function allMoves(pieceKind, board) {
     let lastNeutron = neutron;
     const playerHome = pieceKind == PieceKind.BLACK ? 0 : 4;
     const opponentHome = pieceKind == PieceKind.BLACK ? 4 : 0;
-    const neutronMoves = moves(neutron, board);
+    //todo ver esto
+    const neutronMoves = moves(neutron, board).filter(move => moves.row !== opponentHome);
 
     //todo revisar esto
     neutronMoves.sort((o1, o2) => {
@@ -247,9 +248,12 @@ function maxValue(board, depth, alpha, beta, player) {
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
-    const maxFullMove = new FullMove([], alpha);
+    const fullMoves = allMoves(player, board);
 
-    allMoves(player, board).forEach(fullMove => {
+    const maxFullMove = new FullMove([], alpha);
+    if(fullMoves.length) maxFullMove.moves = fullMoves[0].moves;
+
+    fullMoves.forEach(fullMove => {
         applyFullMove(fullMove, board);
 
         const minFullMove = minValue(board, depth - 1, maxFullMove.score, beta, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
@@ -275,9 +279,12 @@ function minValue(board, depth, alpha, beta, player) {
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
-    const minFullMove = new FullMove([], beta);
+    const fullMoves = allMoves(player, board);
 
-    allMoves(player, board).forEach(fullMove => {
+    const minFullMove = new FullMove([], beta);
+    if(fullMoves.length) minFullMove.moves = fullMoves[0].moves;
+
+    fullMoves.forEach(fullMove => {
         applyFullMove(fullMove, board);
 
         const maxFullMove = maxValue(board, depth - 1, alpha, minFullMove.score, player === PieceKind.BLACK ? PieceKind.WHITE : PieceKind.BLACK);
@@ -331,6 +338,7 @@ exports.onCellClicked = function (row, col) {
                         updateBoard([], exports.board);
                         endGame = checkGameOver(machineFullMove.moves[1], PieceKind.BLACK);
                     } else {
+                        console.log('---------------------------------------------->>>>');
                         endGame = { success: true, kind: PieceKind.WHITE };
                     }
                 }
@@ -373,22 +381,43 @@ exports.newGame = () => {
 exports.saveGame = (filename) => {
     filename = filename || path.join(process.cwd(), `neutron-game-${moment().format().replace(/[:.]/g, '-')}.json`);
 
-    jsonfile.writeFile(filename, { board: exports.board, movements: exports.movements }, { spaces: 2 }, err => {
-        //TODO do this on mainwindow..
-        if (err) console.error(err);
-    });
+    jsonfile.writeFile(
+        filename,
+        { board: exports.board, movements: exports.movements, whomove: whoMove },
+        { spaces: 2 },
+        err => {
+            //TODO do this on mainwindow..
+            if (err) console.error(err);
+        });
 }
 
-//fixme revisar!
+//todo revisar!
 exports.loadGame = (filename) => {
-    jsonfile.readFile(filename, (err, obj) => {
-        if (err) {
-            //TODO do this on mainwindow..
-            console.error(err);
-        }
-        else {
-            exports.board = obj.board || exports.board;
-            exports.movements = obj.movements || exports.movements;
-        }
+    return new Promise((resolve, reject) => {
+        jsonfile.readFile(filename, (err, obj) => {
+            if (err) {
+                reject(err);
+            }
+            else {
+                exports.board = obj.board || exports.board;
+                exports.movements = obj.movements || exports.movements;
+                whoMove = obj.whoMove;
+                resolve(true);
+            }
+        })
     });
+
+}
+
+function tableToString(board) {
+    console.log(Array
+        .from(Array(5).keys())
+        .reduce((acc, i) => acc.concat(`||${board[i].map(pieceToString).join('|')}||\n`), ''));
+}
+
+function pieceToString(pieceKind) {
+    if (pieceKind === PieceKind.BLACK) return 'B';
+    if (pieceKind === PieceKind.WHITE) return 'W';
+    if (pieceKind === PieceKind.NEUTRON) return 'N';
+    return ' ';
 }
