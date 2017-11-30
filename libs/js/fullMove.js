@@ -25,7 +25,7 @@ class FullMove {
     }
 
     empty() {
-        return !moves.length;
+        return !this.moves.length;
     }
 }
 
