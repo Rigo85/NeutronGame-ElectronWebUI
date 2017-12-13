@@ -281,7 +281,6 @@ exports.pieceToString = (pieceKind) => {
     return ' ';
 }
 
-
 exports.getState = board => {
     const neutron = exports.findNeutron(board);
 
@@ -294,16 +293,23 @@ exports.getState = board => {
         return Object.assign(acc, { cB: c.row === 0 ? acc.cB + 1 : acc.cB, cW: c.row === 4 ? acc.cW + 1 : acc.cW });
     }, { cB: 0, cW: 0 });
 
-    // let hash = 17;
-    // hash = hash * 23 + cB;
-    // hash = hash * 29 + cW;
-    // hash = hash * 31 + moves.length;
     let hash = 1;
     hash = hash * 3 + cB;
     hash = hash * 5 + cW;
     hash = hash * 7 + moves.length;
 
-    //console.log(`${cB} ${cW} ${moves.length}`);
-
     return hash;
+}
+
+/**
+ * Game over verification.
+ * @param {*} neutronDestination 
+ * @param {*} pieceKind 
+ */
+exports.checkGameOver = (neutronDestination, pieceKind, board) => {
+    const neutronMoves = exports.moves(neutronDestination, board);
+    if (!neutronMoves.length) return { success: true, kind: pieceKind };
+    if (!neutronDestination.row) return { success: true, kind: exports.PieceKind.BLACK };
+    if (neutronDestination.row === 4) return { success: true, kind: exports.PieceKind.WHITE };
+    return { success: false, kind: 4 };
 }

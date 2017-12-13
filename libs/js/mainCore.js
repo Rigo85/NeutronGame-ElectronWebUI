@@ -8,7 +8,7 @@ const moment = require('moment');
 
 const Move = require('./move.js');
 const FullMove = require('./fullMove.js');
-const { applyFullMove, PieceKind, updateBoard, moves, applyMove } = require('./gameutils');
+const { applyFullMove, PieceKind, updateBoard, moves, applyMove, checkGameOver } = require('./gameutils');
 const { maxValue } = require('./minimax');
 
 /**
@@ -63,19 +63,6 @@ function getWhoMove() {
  */
 function updateWhoMove() {
     whoMove = (whoMove + 1) % 2;
-}
-
-/**
- * Game over verification.
- * @param {*} neutronDestination 
- * @param {*} pieceKind 
- */
-function checkGameOver(neutronDestination, pieceKind) {
-    const neutronMoves = moves(neutronDestination, exports.board);
-    if (!neutronMoves.length) return { success: true, kind: pieceKind };
-    if (!neutronDestination.row) return { success: true, kind: PieceKind.BLACK };
-    if (neutronDestination.row === 4) return { success: true, kind: PieceKind.WHITE };
-    return { success: false, kind: 4 };
 }
 
 /**
@@ -163,7 +150,7 @@ exports.onCellClicked = function (row, col) {
             updateBoard([], exports.board);
 
             if (getWhoMove() === PieceKind.WHITE) {
-                endGame = checkGameOver(neutronTo, PieceKind.WHITE);
+                endGame = checkGameOver(neutronTo, PieceKind.WHITE, exports.board);
                 exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
 
                 if (!endGame.success) {
@@ -179,7 +166,7 @@ exports.onCellClicked = function (row, col) {
                         neutronTo = machineFullMove.moves[1];
                         applyFullMove(machineFullMove, exports.board);
                         updateBoard([], exports.board);
-                        endGame = checkGameOver(machineFullMove.moves[1], PieceKind.BLACK);
+                        endGame = checkGameOver(machineFullMove.moves[1], PieceKind.BLACK, exports.board);
                     } else {
                         endGame = { success: true, kind: PieceKind.WHITE };
                     }
@@ -187,7 +174,7 @@ exports.onCellClicked = function (row, col) {
             } else {
                 neutronFrom = selectedChip;
                 neutronTo = new Move(row, col, selectedChip.kind);
-                endGame = checkGameOver(neutronTo, PieceKind.WHITE);
+                endGame = checkGameOver(neutronTo, PieceKind.WHITE, exports.board);
             }
 
             updateWhoMove();

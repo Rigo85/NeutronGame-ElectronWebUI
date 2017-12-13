@@ -2,16 +2,17 @@
 
 class Q {
     constructor() {
-        this._q = {};
+        this.q = {};
     }
 
     get(source, destination) {
-        const row = this._q[source] || {};
+        const row = this.q[source] || {};
         return row[destination] || 0;
     }
 
-    set(source, destination) {
-        
+    set(source, destination, value) {
+        this.q[source] = this.q[source] || {};
+        this.q[source][destination] = value;
     }
 }
 
