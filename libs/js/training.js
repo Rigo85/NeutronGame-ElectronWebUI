@@ -1,5 +1,7 @@
 'use strict';
 
+const { applyFullMove, PieceKind, updateBoard, moves, applyMove, checkGameOver } = require('./gameutils');
+
 function q_learning(gamma, R, Q, episodes = 100) {
     Array
         .from(Array(episodes).keys())
