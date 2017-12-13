@@ -2,8 +2,9 @@
 
 const Move = require('./move.js');
 const FullMove = require('./fullMove.js');
+exports.states = new Set();
 
-const { findNeutron, allMoves, applyFullMove, heuristic, PieceKind } = require('./gameutils');
+const { findNeutron, allMoves, applyFullMove, heuristic, PieceKind, getState } = require('./gameutils');
 
 /**
  * Maximum function
@@ -43,6 +44,13 @@ const { findNeutron, allMoves, applyFullMove, heuristic, PieceKind } = require('
 //     return maxFullMove;
 // }
 exports.maxValue = (board, depth, alpha, beta, player) => {
+    const state = getState(board);
+    exports.states.add(state);
+    // console.log(`states: ${exports.states.size}`);
+    // const state = heuristic(board);
+    // exports.states.add(state);
+    console.log(`states: ${exports.states.size}, current ${state}`);
+
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 
@@ -121,6 +129,13 @@ exports.maxValue = (board, depth, alpha, beta, player) => {
 //     return minFullMove;
 // }
 exports.minValue = (board, depth, alpha, beta, player) => {
+    const state = getState(board);
+    exports.states.add(state);
+    // console.log(`states: ${exports.states.size}`);
+    // const state = heuristic(board);
+    // exports.states.add(state);
+    console.log(`states: ${exports.states.size}, current ${state}`);
+
     const neutron = findNeutron(board);
     if (!depth || neutron.row == 0 || neutron.row == 4) return new FullMove([], heuristic(board));
 

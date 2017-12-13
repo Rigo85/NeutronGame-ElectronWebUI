@@ -1,23 +1,14 @@
 'use strict';
 
 const electron = require('electron');
+const path = require("path");
 const { ipcRenderer, remote } = electron;
+const { PieceKind } = require(path.resolve('libs/js/gameutils'));
 
 window.onload = function () {
     ipcRenderer.send('reload');
 };
 
-//
-const PieceKind = {
-    BLACK: 1,
-    WHITE: 2,
-    NEUTRON: 3,
-    CELL: 4,
-    SBLACK: 5,
-    SWHITE: 6,
-    SCELL: 7,
-    SNEUTRON: 8
-};
 const rows = ['5', '4', '3', '2', '1', ''];
 const cols = ['', 'A', 'B', 'C', 'D', 'E'];
 const chipKind = {};
@@ -119,7 +110,7 @@ function fullMoveToString(fullMove) {
 }
 
 /**
- * 
+ *  
  * @param {moves to update the moves <ul> list.} moves 
  */
 function updateMovements(moves) {
@@ -135,6 +126,8 @@ function updateMovements(moves) {
             return li;
         })
         .forEach(li => movements.appendChild(li));
+
+        $('#movements').animate({scrollTop: $('#movements').prop("scrollHeight")}, 500);
 }
 
 /**

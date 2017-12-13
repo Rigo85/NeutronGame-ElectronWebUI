@@ -64,7 +64,7 @@ exports.heuristic = (board) => {
 
     const count = neutronMoves
         .map(move => {
-            if (move.row === 4) return -1000;
+            if (move.row === 4) return -5000;
             if (move.row === 0) return 1000;
             return 0;
         })
@@ -279,4 +279,31 @@ exports.pieceToString = (pieceKind) => {
     if (pieceKind === exports.PieceKind.WHITE) return 'W';
     if (pieceKind === exports.PieceKind.NEUTRON) return 'N';
     return ' ';
+}
+
+
+exports.getState = board => {
+    const neutron = exports.findNeutron(board);
+
+    if (neutron.row === 0) return Number.MAX_SAFE_INTEGER;
+    if (neutron.row === 4) return Number.MIN_SAFE_INTEGER;
+
+    const moves = exports.moves(neutron, board);
+
+    const { cB, cW } = moves.reduce((acc, c) => {
+        return Object.assign(acc, { cB: c.row === 0 ? acc.cB + 1 : acc.cB, cW: c.row === 4 ? acc.cW + 1 : acc.cW });
+    }, { cB: 0, cW: 0 });
+
+    // let hash = 17;
+    // hash = hash * 23 + cB;
+    // hash = hash * 29 + cW;
+    // hash = hash * 31 + moves.length;
+    let hash = 1;
+    hash = hash * 3 + cB;
+    hash = hash * 5 + cW;
+    hash = hash * 7 + moves.length;
+
+    //console.log(`${cB} ${cW} ${moves.length}`);
+
+    return hash;
 }
