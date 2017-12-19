@@ -9,6 +9,9 @@ window.onload = function () {
     ipcRenderer.send('reload');
 };
 
+
+//TODO usar un loading gif cuando se esté calculando la jugada.
+
 const rows = ['5', '4', '3', '2', '1', ''];
 const cols = ['', 'A', 'B', 'C', 'D', 'E'];
 const chipKind = {};
@@ -127,7 +130,7 @@ function updateMovements(moves) {
         })
         .forEach(li => movements.appendChild(li));
 
-        $('#movements').animate({scrollTop: $('#movements').prop("scrollHeight")}, 500);
+    $('#movements').animate({ scrollTop: $('#movements').prop("scrollHeight") }, 500);
 }
 
 /**
@@ -135,7 +138,7 @@ function updateMovements(moves) {
  */
 ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
     document.getElementById("neutronBoard").innerHTML = '';
-
+    //TODO mostrar la jugada final en el tablero antes de reiniciar.
     Array
         .from(Array(36).keys())
         .map(i => {

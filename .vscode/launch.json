@@ -23,6 +23,16 @@
             },
             "sourceMaps": true,
             "protocol": "inspector"
+        },
+        {
+            "name": "trainig",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}\\libs\\js\\training.js",
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "NODE_ENV": "development"
+            }
         }
     ]
 }

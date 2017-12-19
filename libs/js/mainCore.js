@@ -154,12 +154,8 @@ exports.onCellClicked = function (row, col) {
                 exports.movements.push(new FullMove([neutronFrom, neutronTo, selectedChip, new Move(row, col, selectedChip.kind)], 0));
 
                 if (!endGame.success) {
-                    const machineFullMove = maxValue(
-                        exports.board,
-                        3,
-                        Number.MIN_SAFE_INTEGER,
-                        Number.MAX_SAFE_INTEGER,
-                        PieceKind.BLACK);
+                    
+                    const machineFullMove = maxValue(exports.board,3,Number.MIN_SAFE_INTEGER,Number.MAX_SAFE_INTEGER,PieceKind.BLACK);
 
                     if (!machineFullMove.empty()) {
                         exports.movements.push(machineFullMove);

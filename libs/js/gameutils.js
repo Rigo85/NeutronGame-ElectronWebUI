@@ -313,3 +313,17 @@ exports.checkGameOver = (neutronDestination, pieceKind, board) => {
     if (neutronDestination.row === 4) return { success: true, kind: exports.PieceKind.WHITE };
     return { success: false, kind: 4 };
 }
+
+exports.newBoard = () => {
+    const board = [
+        exports.PieceKind.BLACK, exports.PieceKind.BLACK, exports.PieceKind.BLACK, exports.PieceKind.BLACK, exports.PieceKind.BLACK,
+        exports.PieceKind.CELL, exports.PieceKind.CELL, exports.PieceKind.CELL, exports.PieceKind.CELL, exports.PieceKind.CELL,
+        exports.PieceKind.CELL, exports.PieceKind.CELL, exports.PieceKind.NEUTRON, exports.PieceKind.CELL, exports.PieceKind.CELL,
+        exports.PieceKind.CELL, exports.PieceKind.CELL, exports.PieceKind.CELL, exports.PieceKind.CELL, exports.PieceKind.CELL,
+        exports.PieceKind.WHITE, exports.PieceKind.WHITE, exports.PieceKind.WHITE, exports.PieceKind.WHITE, exports.PieceKind.WHITE];
+
+    return _.chunk(_.shuffle(board), 5);
+}
+
+
+
