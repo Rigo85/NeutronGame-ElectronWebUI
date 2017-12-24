@@ -104,4 +104,4 @@ function getMaxReward(fullMovesNextState, board, nextState, Q) {
         }));
 }
 
-q_learning(1000);
+q_learning(2000);
