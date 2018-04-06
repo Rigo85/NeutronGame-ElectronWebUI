@@ -1,0 +1,38 @@
+{
+    // Utilizar IntelliSense para aprender acerca de los posibles atributos.
+    // Mantenga el puntero para ver las descripciones de los existentes atributos 
+    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}\\main.js",
+            "stopOnEntry": false,
+            "args": [],
+            "runtimeExecutable": "${workspaceRoot}\\node_modules\\.bin\\electron",
+            "windows": {
+                "runtimeExecutable": "${workspaceRoot}\\node_modules\\.bin\\electron.cmd"
+            },
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "sourceMaps": true,
+            "protocol": "inspector"
+        },
+        {
+            "name": "trainig",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}\\libs\\js\\training.js",
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "NODE_ENV": "development"
+            }
+        }
+    ]
+}

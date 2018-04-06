@@ -1,23 +1,17 @@
 'use strict';
 
 const electron = require('electron');
+const path = require("path");
 const { ipcRenderer, remote } = electron;
+const { PieceKind } = require(path.resolve('libs/js/gameutils'));
 
 window.onload = function () {
     ipcRenderer.send('reload');
 };
 
-//
-const PieceKind = {
-    BLACK: 1,
-    WHITE: 2,
-    NEUTRON: 3,
-    CELL: 4,
-    SBLACK: 5,
-    SWHITE: 6,
-    SCELL: 7,
-    SNEUTRON: 8
-};
+
+//TODO usar un loading gif cuando se esté calculando la jugada.
+
 const rows = ['5', '4', '3', '2', '1', ''];
 const cols = ['', 'A', 'B', 'C', 'D', 'E'];
 const chipKind = {};
@@ -118,6 +112,10 @@ function fullMoveToString(fullMove) {
     return `EMPTY FULLMOVE with score = ${score}`;
 }
 
+/**
+ *  
+ * @param {moves to update the moves <ul> list.} moves 
+ */
 function updateMovements(moves) {
     const movements = document.getElementById("movements");
     movements.innerHTML = '';
@@ -131,12 +129,16 @@ function updateMovements(moves) {
             return li;
         })
         .forEach(li => movements.appendChild(li));
+
+    $('#movements').animate({ scrollTop: $('#movements').prop("scrollHeight") }, 500);
 }
 
-//Refresh view on board changes.
+/**
+ * Refresh view on board changes.
+ */
 ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
     document.getElementById("neutronBoard").innerHTML = '';
-
+    //TODO mostrar la jugada final en el tablero antes de reiniciar.
     Array
         .from(Array(36).keys())
         .map(i => {
@@ -149,10 +151,23 @@ ipcRenderer.on('board:updated', (event, { board, moves, endgame }) => {
 
     updateMovements(moves);
 
-    if(endgame.success){
-        alert(`${kind2Name(endgame.kind)} wins!`);
-        //preguntar guardar
-        //reiniciar juego.
+    if (endgame.success) {
+        if (confirm(`${kind2Name(endgame.kind)} wins!, do you want to save this game?`)) {
+            ipcRenderer.send('game:save');
+        }
+        ipcRenderer.send('game:new');
     }
 });
 
+function tableToString(board) {
+    console.log(Array
+        .from(Array(5).keys())
+        .reduce((acc, i) => acc.concat(`||${board[i].map(pieceToString).join('|')}||\n`), ''));
+}
+
+function pieceToString(pieceKind) {
+    if (pieceKind === PieceKind.BLACK) return 'B';
+    if (pieceKind === PieceKind.WHITE) return 'W';
+    if (pieceKind === PieceKind.NEUTRON) return 'N';
+    return ' ';
+}

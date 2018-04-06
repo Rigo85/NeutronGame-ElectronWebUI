@@ -21,9 +21,12 @@ class FullMove {
                 `${piece2Kind}: ${this.moves[2].toString()}-${this.moves[3].toString()}`;
         }
 
-        return `EMPTY FULLMOVE with score = ${score}`;
+        return `EMPTY FULLMOVE with score = ${this.score}`;
     }
 
+    empty() {
+        return !this.moves.length;
+    }
 }
 
 module.exports = FullMove;
